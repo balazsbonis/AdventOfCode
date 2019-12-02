@@ -3,21 +3,19 @@ import 'dart:io';
 import 'dart:async';
 
 void main(){
-  final inputFile = new File("01\\input.txt");
-  Stream<List<int>> inputStream = inputFile.openRead();
-
+  // Pt 1.
   int fuel = 0;
-  inputStream
-    .transform(utf8.decoder)
-    .transform(new LineSplitter())
-    .listen((String line){
-      var mass = int.parse(line);
-      fuel += part2(mass);  // pt 1.
-    },
-    onDone: () {
-      print("Fuel: ${fuel}");
-    },
-    onError: (e) {print(e.toString());});
+  new File("01\\input.txt").readAsStringSync().trim().split("\n").forEach((f) => {
+    fuel += part1(int.parse(f))
+  });
+  print(fuel);
+
+  // Pt 2.
+  fuel = 0;
+  new File("01\\input.txt").readAsStringSync().trim().split("\n").forEach((f) => {
+    fuel += part2(int.parse(f))
+  });
+  print(fuel);
 }
 
 // pt. 1

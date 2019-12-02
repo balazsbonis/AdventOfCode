@@ -11,16 +11,7 @@ class Puzzle{
   }
 
   List<String> parseInputByLine(){
-    Stream<List<int>> inputStream = inputFile.openRead();
-    input.clear();
-    inputStream
-      .transform(utf8.decoder)
-      .transform(new LineSplitter())
-      .listen((String line) => input.add(line),
-         onError: (e) { print("Something went wrong: $e)"); }
-      )
-    ;
-    return input;
+    return input = inputFile.readAsStringSync().trim().split("\n");
   }
 
   List<String> parseInputBySeparator({String separator = ","}){
