@@ -3,7 +3,7 @@ import 'dart:io';
 
 class Puzzle{
   
-  final inputFile = new File(".\\02\\bin\\input.txt");
+  final inputFile = new File(".\\02\\input.txt");
   List<String> input = new List<String>();
 
   Puzzle() {

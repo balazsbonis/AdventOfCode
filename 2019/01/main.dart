@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:async';
 
 void main(){
-  final inputFile = new File("01\\bin\\input.txt");
+  final inputFile = new File("01\\input.txt");
   Stream<List<int>> inputStream = inputFile.openRead();
 
   int fuel = 0;
