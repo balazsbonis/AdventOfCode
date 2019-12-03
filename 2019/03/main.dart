@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:image/image.dart';
@@ -138,8 +137,11 @@ void doThePuzzle(Puzzle puzzle) {
 void drawThePuzzle(Puzzle puzzle) {
   var wireStrings = puzzle.parseInputByLine();
   var random = Random();
-  Image image = Image(20000, 20000);
+  GifEncoder encoder = new GifEncoder(repeat: 1, delay: 10);
+  Image image = Image(500, 500);
   fill(image, getColor(0, 0, 0));
+  encoder.addFrame(image, duration: 3);
+  var scaleFactor = 40;
 
   for (int i = 0; i < wireStrings.length; i++) {
     var lineColour = getColor(random.nextInt(155) + 100,
@@ -151,31 +153,33 @@ void drawThePuzzle(Puzzle puzzle) {
       var sectionLength = int.parse(j.substring(1));
       switch (j[0]) {
         case "U":
-          drawLine(image, currentX, currentY, currentX,
-              currentY - sectionLength, lineColour,
+          drawLine(image, currentX ~/ scaleFactor, currentY ~/ scaleFactor, currentX ~/ scaleFactor,
+              (currentY - sectionLength) ~/ scaleFactor, lineColour,
               thickness: 5);
           currentY = currentY - sectionLength;
           break;
         case "D":
-          drawLine(image, currentX, currentY, currentX,
-              currentY + sectionLength, lineColour,
+          drawLine(image, currentX ~/ scaleFactor, currentY ~/ scaleFactor, currentX ~/ scaleFactor,
+              (currentY + sectionLength) ~/ scaleFactor, lineColour,
               thickness: 5);
           currentY = currentY + sectionLength;
           break;
         case "L":
-          drawLine(image, currentX, currentY, currentX - sectionLength,
-              currentY, lineColour,
+          drawLine(image, currentX ~/ scaleFactor, currentY ~/ scaleFactor, (currentX - sectionLength) ~/ scaleFactor,
+              currentY ~/ scaleFactor, lineColour,
               thickness: 5);
           currentX = currentX - sectionLength;
           break;
         case "R":
-          drawLine(image, currentX, currentY, currentX + sectionLength,
-              currentY, lineColour,
+          drawLine(image, currentX ~/ scaleFactor, currentY ~/ scaleFactor, (currentX + sectionLength) ~/ scaleFactor,
+              currentY ~/ scaleFactor, lineColour,
               thickness: 5);
           currentX = currentX + sectionLength;
           break;
       }
+      encoder.addFrame(image, duration: 3);
     }
   }
-  File('output.png').writeAsBytesSync(encodePng(image));
+  
+  File('output.gif').writeAsBytesSync(encoder.finish());
 }

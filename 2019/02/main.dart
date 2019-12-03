@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 class Puzzle{
@@ -51,7 +50,7 @@ List<int> part1(List<int> result){
   return result;
 }
 
-List<int> part2(Puzzle puzzle){
+void part2(Puzzle puzzle){
   var originalArray = puzzle.parseInputBySeparator().map((String s) => int.parse(s)).toList();
   
   int noun = 0;
