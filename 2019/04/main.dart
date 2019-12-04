@@ -18,7 +18,12 @@ class Puzzle {
 void main() {
   Puzzle puzzle = new Puzzle();
 
+  Stopwatch stopwatch = new Stopwatch();
+  stopwatch.start();
   solve();
+  stopwatch.stop();
+  
+  print("Execution took ${stopwatch.elapsed}");
 }
 
 void solve() {
