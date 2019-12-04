@@ -22,22 +22,26 @@ void main() {
 }
 
 void solve() {
-  var c = 134792;
+  var c = 206938;
   List<int> passwordsPt1 = new List<int>();
   List<int> passwordsPt2 = new List<int>();
-  while (c <= 675810) {
+  while (c <= 679128) {
     if (c ~/ 100000 > c % 100000 ~/ 10000) {
       // first digit larger than second
       c += 10000;
+      c -= (c % 10000);
     } else if (c % 100000 ~/ 10000 > c % 10000 ~/ 1000) {
       // second > third
       c += 1000;
+      c -= (c % 1000);
     } else if (c % 100000 % 10000 ~/ 1000 > c % 1000 ~/ 100) {
       // third > fourth
       c += 100;
+      c -= (c % 100);      
     } else if (c % 100000 % 10000 % 1000 ~/ 100 > c % 100 ~/ 10) {
       // fourth > fifth
       c += 10;
+      c -= (c % 10);
     } else if (c % 100000 % 10000 % 1000 % 100 ~/ 10 > c % 10) {
       c++;
     } else {
@@ -45,9 +49,9 @@ void solve() {
         passwordsPt1.add(c);
         if (checkForPart2(c)) {
           passwordsPt2.add(c);
-          print("!: ${c}");
+          //print("!: ${c}");
         } else{
-          print(".: ${c}");
+          //print(".: ${c}");
         }
       }
       c++;
