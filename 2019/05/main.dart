@@ -27,6 +27,7 @@ class Puzzle {
       instruction.work();
       pointer += instruction.skip;
     }
+    // 11981754
   }
 }
 
@@ -40,113 +41,82 @@ class Instruction {
     var raw = memory[pointer].toString().padLeft(5, '0');
     var opcode = raw[3] + raw[4];
 
-    switch (opcode) {
-      case ("01"):
-        // addition
-        work = () {
-          var a =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          var b =
-              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
-          print("${a} + ${b}");
-          memory[memory[pointer + 3]] = a + b;
-        };
-        skip = 4;
-        break;
-      case ("02"):
-        // multiplication
-        work = () {
-          var a =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          var b =
-              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
-          print("${a} * ${b}");
-          memory[memory[pointer + 3]] = a * b;
-        };
-        skip = 4;
-        break;
-      case ("03"):
-        // input
-        work = () {
-          var inputParam = 5;
-          memory[memory[pointer + 1]] = inputParam; // 1 = input AC
-          print("Read ${inputParam}");
-        };
-        skip = 2;
-        break;
-      case ("04"):
-        // output
-        work = () {
-          print(
-              "--- --- --- === CONSOLE OUTPUT: ${memory[memory[pointer + 1]]} === --- --- ---");
-        };
-        skip = 2;
-        break;
-      case ("05"):
-        // jump-if-true
-        work = () {
-          var check =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          print("${check} != 0?");
-          if (check != 0) {
-            var jump = raw[1] == "0"
-                ? memory[memory[pointer + 2]]
-                : memory[pointer + 2];
-            skip = jump - pointer;
-          } else {
-            skip = 3;
-          }
-        };
-        break;
-      case ("06"):
-        // jump-if-false
-        work = () {
-          var check =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          print("${check} == 0?");
-          if (check == 0) {
-            var jump = raw[1] == "0"
-                ? memory[memory[pointer + 2]]
-                : memory[pointer + 2];
-            skip = jump - pointer;
-          } else {
-            skip = 3;
-          }
-        };
-        break;
-      case ("07"):
-        // less than
-        work = () {
-          var checkSmall =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          var checkLarge =
-              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
-          var result = memory[pointer + 3];
-          print("${checkSmall} < ${checkLarge}?");
-          memory[result] = checkSmall < checkLarge ? 1 : 0;
-        };
-        skip = 4;
-        break;
-      case ("08"):
-        // equals
-        work = () {
-          var checkSmall =
-              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
-          var checkLarge =
-              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
-          var result = memory[pointer + 3];
-          print("${checkSmall} == ${checkLarge}?");
-          memory[result] = checkSmall == checkLarge ? 1 : 0;
-        };
-        skip = 4;
-        break;
-      case ("99"):
-        // end
-        work = () {
-          print("Ended.");
-        };
-        skip = -(pointer + 1);
-        break;
+    if (opcode != "99") {
+      var p1 =
+          raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
+      var p2 =
+          raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
+
+      switch (opcode) {
+        case ("01"):
+          // addition
+          work = () {
+            print("! ${p1} + ${p2}");
+            memory[memory[pointer + 3]] = p1 + p2;
+          };
+          skip = 4;
+          break;
+        case ("02"):
+          // multiplication
+          work = () {
+            print("! ${p1} * ${p2}");
+            memory[memory[pointer + 3]] = p1 * p2;
+          };
+          skip = 4;
+          break;
+        case ("03"):
+          // input
+          work = () {
+            var inputParam = 5;
+            memory[memory[pointer + 1]] = inputParam; // 1 = input AC
+            print("READ> ${inputParam}");
+          };
+          skip = 2;
+          break;
+        case ("04"):
+          // output
+          work = () {
+            print(
+                "--- --- --- === CONSOLE OUTPUT: ${memory[memory[pointer + 1]]} === --- --- ---");
+          };
+          skip = 2;
+          break;
+        case ("05"):
+          // jump-if-true
+          work = () {
+            print("  ${p1} != 0?");
+            skip = p1 != 0 ? p2 - pointer : 3;
+          };
+          break;
+        case ("06"):
+          // jump-if-false
+          work = () {
+            print("  ${p1} == 0?");
+            skip = p1 == 0 ? p2 - pointer : 3;
+          };
+          break;
+        case ("07"):
+          // less than
+          work = () {
+            print("  ${p1} < ${p2}?");
+            memory[memory[pointer + 3]] = p1 < p2 ? 1 : 0;
+          };
+          skip = 4;
+          break;
+        case ("08"):
+          // equals
+          work = () {
+            print("  ${p1} == ${p2}?");
+            memory[memory[pointer + 3]] = p1 == p2 ? 1 : 0;
+          };
+          skip = 4;
+          break;
+      }
+    } else {
+      work = () {
+        print("Ended.");
+      };
+      skip = -(pointer + 1);
     }
   }
 }
