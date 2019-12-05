@@ -18,8 +18,11 @@ class Puzzle {
   void solve() {
     var memory =
         parseInputBySeparator().map((String s) => int.parse(s)).toList();
+    //var memory = [3,3,1105,-1,9,1101,0,0,12,4,12,99,1];
     var pointer = 0;
     while (pointer != -1) {
+      //print(memory);
+      //print("Pointer: ${pointer} [${memory[pointer]}]");
       var instruction = new Instruction(memory, pointer);
       instruction.work();
       pointer += instruction.skip;
@@ -30,6 +33,7 @@ class Puzzle {
 class Instruction {
   List<int> operands;
   int skip = 0;
+  Function work;
 
   Instruction(List<int> memory, int pointer) {
     operands = new List<int>();
@@ -44,6 +48,7 @@ class Instruction {
               raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
           var b =
               raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
+          print("${a} + ${b}");
           memory[memory[pointer + 3]] = a + b;
         };
         skip = 4;
@@ -55,6 +60,7 @@ class Instruction {
               raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
           var b =
               raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
+          print("${a} * ${b}");
           memory[memory[pointer + 3]] = a * b;
         };
         skip = 4;
@@ -62,17 +68,77 @@ class Instruction {
       case ("03"):
         // input
         work = () {
-          //var line = stdin.readLineSync(encoding: Encoding.getByName("utf-8"));
-          memory[memory[pointer + 1]] = 1;
+          var inputParam = 5;
+          memory[memory[pointer + 1]] = inputParam; // 1 = input AC
+          print("Read ${inputParam}");
         };
         skip = 2;
         break;
       case ("04"):
         // output
         work = () {
-          print(memory[memory[pointer + 1]]);
+          print(
+              "--- --- --- === CONSOLE OUTPUT: ${memory[memory[pointer + 1]]} === --- --- ---");
         };
         skip = 2;
+        break;
+      case ("05"):
+        // jump-if-true
+        work = () {
+          var check =
+              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
+          print("${check} != 0?");
+          if (check != 0) {
+            var jump = raw[1] == "0"
+                ? memory[memory[pointer + 2]]
+                : memory[pointer + 2];
+            skip = jump - pointer;
+          } else {
+            skip = 3;
+          }
+        };
+        break;
+      case ("06"):
+        // jump-if-false
+        work = () {
+          var check =
+              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
+          print("${check} == 0?");
+          if (check == 0) {
+            var jump = raw[1] == "0"
+                ? memory[memory[pointer + 2]]
+                : memory[pointer + 2];
+            skip = jump - pointer;
+          } else {
+            skip = 3;
+          }
+        };
+        break;
+      case ("07"):
+        // less than
+        work = () {
+          var checkSmall =
+              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
+          var checkLarge =
+              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
+          var result = memory[pointer + 3];
+          print("${checkSmall} < ${checkLarge}?");
+          memory[result] = checkSmall < checkLarge ? 1 : 0;
+        };
+        skip = 4;
+        break;
+      case ("08"):
+        // equals
+        work = () {
+          var checkSmall =
+              raw[2] == "0" ? memory[memory[pointer + 1]] : memory[pointer + 1];
+          var checkLarge =
+              raw[1] == "0" ? memory[memory[pointer + 2]] : memory[pointer + 2];
+          var result = memory[pointer + 3];
+          print("${checkSmall} == ${checkLarge}?");
+          memory[result] = checkSmall == checkLarge ? 1 : 0;
+        };
+        skip = 4;
         break;
       case ("99"):
         // end
@@ -83,8 +149,6 @@ class Instruction {
         break;
     }
   }
-
-  Function work;
 }
 
 void main() {
