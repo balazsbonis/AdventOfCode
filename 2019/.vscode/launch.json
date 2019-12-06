@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Dart",
-            "program": "05/main.dart",
+            "program": "06/main.dart",
             "request": "launch",
             "type": "dart"
         }
