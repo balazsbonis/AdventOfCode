@@ -46,9 +46,14 @@ class Runner {
     tape = new Tape(memory, 0);
   }
 
+  void reset() {
+    paramPointer = 0;
+    relativeBase = 0;
+    printToConsole = false;
+  }
+
   void run() {
     tape.pointer = 0;
-    paramPointer = 0;
     while (tape.pointer != -1) {
       if (printToConsole) {
         print(tape.toString());
@@ -90,7 +95,7 @@ class Instruction {
             p1 = tape.getValue(tape.pointer + 1);
           } else if (p1Mode == "2") {
             p1 = tape.getValue(
-                tape.getValue(tape.pointer + 1) + Runner.relativeBase);
+                Runner.relativeBase + tape.getValue(tape.pointer + 1));
           }
 
           if (p2Mode == "0") {
@@ -99,15 +104,14 @@ class Instruction {
             p2 = tape.getValue(tape.pointer + 2);
           } else if (p2Mode == "2") {
             p2 = tape.getValue(
-                tape.getValue(tape.pointer + 2) + Runner.relativeBase);
+                Runner.relativeBase + tape.getValue(tape.pointer + 2));
           }
 
           if (p3Mode == "0") {
             p3 = tape
                 .getValue(tape.pointer + 3); // p1 + p2 written directly to p3
           } else if (p3Mode == "2") {
-            p3 = tape.getValue(
-                Runner.relativeBase + tape.getValue(tape.pointer + 3));
+            p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
           }
 
           work = () {
@@ -140,8 +144,7 @@ class Instruction {
             p3 = tape
                 .getValue(tape.pointer + 3); // p1 * p2 written directly to p3
           } else if (p3Mode == "2") {
-            p3 = tape.getValue(
-                Runner.relativeBase + tape.getValue(tape.pointer + 3));
+            p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
           }
 
           work = () {
@@ -261,8 +264,7 @@ class Instruction {
               p3 = tape.getValue(
                   tape.pointer + 3); // p1 == p2 written directly to p3
             } else if (p3Mode == "2") {
-              p3 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 3));
+              p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
             }
 
             if (Runner.printToConsole) print("  ${p1} < ${p2}?");
@@ -294,8 +296,7 @@ class Instruction {
               p3 = tape.getValue(
                   tape.pointer + 3); // p1 == p2 written directly to p3
             } else if (p3Mode == "2") {
-              p3 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 3));
+              p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
             }
             if (Runner.printToConsole) print("  ${p1} == ${p2}?");
             tape.setValue(p3, p1 == p2 ? 1 : 0);
