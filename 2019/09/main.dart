@@ -28,13 +28,13 @@ class Puzzle {
       // 21,20,1006,20,31,1106,0,36,98,0,0,1002,
       // 21,125,20,4,20,1105,1,46,104,999,1105,1,
       // 46,1101,1000,1,20,4,20,1105,1,46,98,99], // output should be 999
-      [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99], // quine
-      [1102,34915192,34915192,7,4,7,99,0], // 1219070632396864 
+      //[109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99], // quine
+      [1102, 34915192, 34915192, 7, 4, 7, 99, 0], // 1219070632396864
     };
 
     for (var memory in memories) {
       print("Running test for $memory");
-      var run = new Runner(memory, [1]);//..enablePrint();
+      var run = new Runner(memory, [1]); //..enablePrint();
       run.run();
     }
   }
@@ -42,12 +42,17 @@ class Puzzle {
   void solve() {
     var memory =
         parseInputBySeparator().map((String s) => int.parse(s)).toList();
-    var run = new Runner(memory, [1]);
-      //..enablePrint(); // 203 - x - low
-    run.run();
+
+    var run1 = new Runner(memory, [1])
+      ..reset()
+      ..run();
+    solution1 = run1.lastOutput;
+    var run2 = new Runner(memory, [2])
+      ..reset()
+      ..run();
+    solution2 = run2.lastOutput;
   }
 }
-
 
 void main() {
   Puzzle puzzle = new Puzzle();
