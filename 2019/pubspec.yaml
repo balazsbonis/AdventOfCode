@@ -1,3 +1,4 @@
 name: adventOfCode2019
 dependencies:
-  image: ^2.1.9
+  image: ^2.1.9 
+  trotter: ^1.0.2
