@@ -56,7 +56,7 @@ class Runner {
     tape.pointer = 0;
     while (tape.pointer != -1) {
       if (printToConsole) {
-        print(tape.toString());
+        //print(tape.toString()); // uncomment for tape snapshot
       }
       var instruction = new Instruction(tape, params);
       var result = instruction.work();
@@ -76,6 +76,20 @@ class Instruction {
   int skip = 0;
   Function work;
 
+  int parseInputParam(Tape tape, String mode, int position) {
+    return tape.getValue(mode == "0"
+        ? tape.getValue(position)
+        : mode == "1"
+            ? position
+            : Runner.relativeBase + tape.getValue(position));
+  }
+
+  int parseOutputParam(Tape tape, String mode, int position) {
+    return mode == "0"
+        ? tape.getValue(position)
+        : Runner.relativeBase + tape.getValue(position);
+  }
+
   Instruction(Tape tape, List<int> params) {
     var raw = tape.getValue(tape.pointer).toString().padLeft(5, '0');
     var opcode = raw[3] + raw[4];
@@ -89,231 +103,93 @@ class Instruction {
       switch (opcode) {
         case ("01"):
           // addition
-          if (p1Mode == "0") {
-            p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-          } else if (p1Mode == "1") {
-            p1 = tape.getValue(tape.pointer + 1);
-          } else if (p1Mode == "2") {
-            p1 = tape.getValue(
-                Runner.relativeBase + tape.getValue(tape.pointer + 1));
-          }
-
-          if (p2Mode == "0") {
-            p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-          } else if (p2Mode == "1") {
-            p2 = tape.getValue(tape.pointer + 2);
-          } else if (p2Mode == "2") {
-            p2 = tape.getValue(
-                Runner.relativeBase + tape.getValue(tape.pointer + 2));
-          }
-
-          if (p3Mode == "0") {
-            p3 = tape
-                .getValue(tape.pointer + 3); // p1 + p2 written directly to p3
-          } else if (p3Mode == "2") {
-            p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
-          }
-
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
+          p3 = parseOutputParam(tape, p3Mode, tape.pointer + 3);
           work = () {
-            if (Runner.printToConsole) print("! ${p1} + ${p2}");
+            if (Runner.printToConsole) print(" ADD> ${p1} + ${p2}");
             tape.setValue(p3, p1 + p2);
           };
           skip = 4;
           break;
         case ("02"):
           // multiplication
-          if (p1Mode == "0") {
-            p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-          } else if (p1Mode == "1") {
-            p1 = tape.getValue(tape.pointer + 1);
-          } else if (p1Mode == "2") {
-            p1 = tape.getValue(
-                tape.getValue(tape.pointer + 1) + Runner.relativeBase);
-          }
-
-          if (p2Mode == "0") {
-            p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-          } else if (p2Mode == "1") {
-            p2 = tape.getValue(tape.pointer + 2);
-          } else if (p2Mode == "2") {
-            p2 = tape.getValue(
-                Runner.relativeBase + tape.getValue(tape.pointer + 2));
-          }
-
-          if (p3Mode == "0") {
-            p3 = tape
-                .getValue(tape.pointer + 3); // p1 * p2 written directly to p3
-          } else if (p3Mode == "2") {
-            p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
-          }
-
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
+          p3 = parseOutputParam(tape, p3Mode, tape.pointer + 3);
           work = () {
-            if (Runner.printToConsole) print("! ${p1} * ${p2}");
+            if (Runner.printToConsole) print(" MUL> ${p1} * ${p2}");
             tape.setValue(p3, p1 * p2);
           };
           skip = 4;
           break;
         case ("03"):
           // input
+          var inputParam = params[Runner.paramPointer];
+          print("READ> ${inputParam}");
           work = () {
-            var inputParam = params[Runner.paramPointer];
-            switch (p1Mode) {
-              case "0":
-                tape.setValue(tape.getValue(tape.pointer + 1), inputParam);
-                break;
-              case "1":
-                break;
-              case "2":
-                tape.setValue(
-                    tape.getValue(tape.pointer + 1) + Runner.relativeBase,
-                    inputParam);
-                break;
-            }
+            tape.setValue(
+                p1Mode == "0"
+                    ? tape.getValue(tape.pointer + 1)
+                    : (tape.getValue(tape.pointer + 1) + Runner.relativeBase),
+                inputParam);
             Runner.paramPointer++;
-            print("READ> ${inputParam}");
           };
           skip = 2;
           break;
         case ("04"):
           // output
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
-            }
-
-            print("--- --- --- === CONSOLE OUTPUT: ${p1} === --- --- ---");
+            print("PRNT> ${p1}");
             return p1;
           };
           skip = 2;
           break;
         case ("05"):
           // jump-if-non-zero
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
-            }
-
-            if (p2Mode == "0") {
-              p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-            } else if (p2Mode == "1") {
-              p2 = tape.getValue(tape.pointer + 2);
-            } else if (p2Mode == "2") {
-              p2 = tape.getValue(
-                  tape.getValue(tape.pointer + 2) + Runner.relativeBase);
-            }
-
-            if (Runner.printToConsole) print("  ${p1} == 0?");
+            if (Runner.printToConsole) print(" J!0> ${p1} != 0?");
             skip = p1 != 0 ? p2 - tape.pointer : 3;
           };
           break;
         case ("06"):
           // jump-if-zero
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
-            }
-
-            if (p2Mode == "0") {
-              p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-            } else if (p2Mode == "1") {
-              p2 = tape.getValue(tape.pointer + 2);
-            } else if (p2Mode == "2") {
-              p2 = tape.getValue(
-                  tape.getValue(tape.pointer + 2) + Runner.relativeBase);
-            }
-
-            if (Runner.printToConsole) print("  ${p1} != 0?");
+            if (Runner.printToConsole) print(" J=0> ${p1} != 0?");
             skip = p1 == 0 ? p2 - tape.pointer : 3;
           };
           break;
         case ("07"):
           // less than
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
+          p3 = parseOutputParam(tape, p3Mode, tape.pointer + 3);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 1));
-            }
-            if (p2Mode == "0") {
-              p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-            } else if (p2Mode == "1") {
-              p2 = tape.getValue(tape.pointer + 2);
-            } else if (p2Mode == "2") {
-              p2 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 2));
-            }
-            if (p3Mode == "0") {
-              p3 = tape.getValue(
-                  tape.pointer + 3); // p1 == p2 written directly to p3
-            } else if (p3Mode == "2") {
-              p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
-            }
-
-            if (Runner.printToConsole) print("  ${p1} < ${p2}?");
+            if (Runner.printToConsole) print(" LES> ${p1} < ${p2}?");
             tape.setValue(p3, p1 < p2 ? 1 : 0);
           };
           skip = 4;
           break;
         case ("08"):
           // equals
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
+          p2 = parseInputParam(tape, p2Mode, tape.pointer + 2);
+          p3 = parseOutputParam(tape, p3Mode, tape.pointer + 3);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 1));
-            }
-            if (p2Mode == "0") {
-              p2 = tape.getValue(tape.getValue(tape.pointer + 2));
-            } else if (p2Mode == "1") {
-              p2 = tape.getValue(tape.pointer + 2);
-            } else if (p2Mode == "2") {
-              p2 = tape.getValue(
-                  Runner.relativeBase + tape.getValue(tape.pointer + 2));
-            }
-
-            if (p3Mode == "0") {
-              p3 = tape.getValue(
-                  tape.pointer + 3); // p1 == p2 written directly to p3
-            } else if (p3Mode == "2") {
-              p3 = Runner.relativeBase + tape.getValue(tape.pointer + 3);
-            }
-            if (Runner.printToConsole) print("  ${p1} == ${p2}?");
+            if (Runner.printToConsole) print(" EQU> ${p1} == ${p2}?");
             tape.setValue(p3, p1 == p2 ? 1 : 0);
           };
           skip = 4;
           break;
         case ("09"):
+          p1 = parseInputParam(tape, p1Mode, tape.pointer + 1);
           work = () {
-            if (p1Mode == "0") {
-              p1 = tape.getValue(tape.getValue(tape.pointer + 1));
-            } else if (p1Mode == "1") {
-              p1 = tape.getValue(tape.pointer + 1);
-            } else if (p1Mode == "2") {
-              p1 = tape.getValue(
-                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
-            }
-            if (Runner.printToConsole) print("R +(${p1})");
+            if (Runner.printToConsole) print(" SHR> +(${p1})");
             Runner.relativeBase += p1;
           };
           skip = 2;
@@ -321,7 +197,7 @@ class Instruction {
       }
     } else {
       work = () {
-        print("Ended.");
+        print(" END> ---");
       };
       skip = -(tape.pointer + 1);
     }
