@@ -92,6 +92,7 @@ class Instruction {
             p1 = tape.getValue(
                 tape.getValue(tape.pointer + 1) + Runner.relativeBase);
           }
+
           if (p2Mode == "0") {
             p2 = tape.getValue(tape.getValue(tape.pointer + 2));
           } else if (p2Mode == "1") {
@@ -108,6 +109,7 @@ class Instruction {
             p3 = tape.getValue(
                 Runner.relativeBase + tape.getValue(tape.pointer + 3));
           }
+
           work = () {
             if (Runner.printToConsole) print("! ${p1} + ${p2}");
             tape.setValue(p3, p1 + p2);
@@ -124,6 +126,7 @@ class Instruction {
             p1 = tape.getValue(
                 tape.getValue(tape.pointer + 1) + Runner.relativeBase);
           }
+
           if (p2Mode == "0") {
             p2 = tape.getValue(tape.getValue(tape.pointer + 2));
           } else if (p2Mode == "1") {
@@ -140,6 +143,7 @@ class Instruction {
             p3 = tape.getValue(
                 Runner.relativeBase + tape.getValue(tape.pointer + 3));
           }
+
           work = () {
             if (Runner.printToConsole) print("! ${p1} * ${p2}");
             tape.setValue(p3, p1 * p2);
@@ -178,6 +182,7 @@ class Instruction {
               p1 = tape.getValue(
                   tape.getValue(tape.pointer + 1) + Runner.relativeBase);
             }
+
             print("--- --- --- === CONSOLE OUTPUT: ${p1} === --- --- ---");
             return p1;
           };
@@ -190,7 +195,11 @@ class Instruction {
               p1 = tape.getValue(tape.getValue(tape.pointer + 1));
             } else if (p1Mode == "1") {
               p1 = tape.getValue(tape.pointer + 1);
+            } else if (p1Mode == "2") {
+              p1 = tape.getValue(
+                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
             }
+
             if (p2Mode == "0") {
               p2 = tape.getValue(tape.getValue(tape.pointer + 2));
             } else if (p2Mode == "1") {
@@ -211,7 +220,11 @@ class Instruction {
               p1 = tape.getValue(tape.getValue(tape.pointer + 1));
             } else if (p1Mode == "1") {
               p1 = tape.getValue(tape.pointer + 1);
+            } else if (p1Mode == "2") {
+              p1 = tape.getValue(
+                  tape.getValue(tape.pointer + 1) + Runner.relativeBase);
             }
+
             if (p2Mode == "0") {
               p2 = tape.getValue(tape.getValue(tape.pointer + 2));
             } else if (p2Mode == "1") {
@@ -264,8 +277,8 @@ class Instruction {
               p1 = tape.getValue(tape.getValue(tape.pointer + 1));
             } else if (p1Mode == "1") {
               p1 = tape.getValue(tape.pointer + 1);
-            } else if (p2Mode == "2") {
-              p2 = tape.getValue(
+            } else if (p1Mode == "2") {
+              p1 = tape.getValue(
                   Runner.relativeBase + tape.getValue(tape.pointer + 1));
             }
             if (p2Mode == "0") {
