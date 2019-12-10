@@ -6,10 +6,6 @@ class Tape {
 
   Tape(this.memory, this.pointer);
 
-  int getNext(int offset) {
-    return memory[pointer + offset];
-  }
-
   int getValue(int from) {
     if (memory.length < from) {
       memory = memory
