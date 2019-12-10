@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'intcode_compiler.dart';
+import '../base/intcode_compiler.dart';
 
 class Puzzle {
   final inputFile = new File(".\\09\\input.txt");

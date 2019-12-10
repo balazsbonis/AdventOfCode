@@ -1,8 +1,7 @@
-import 'dart:collection';
 import 'dart:io';
 import 'package:trotter/trotter.dart';
 
-import 'intcode_compiler.dart';
+import '../base/intcode_compiler.dart';
 
 class Puzzle {
   final inputFile = new File(".\\07\\input.txt");
