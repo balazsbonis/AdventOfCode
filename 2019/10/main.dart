@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import '../base/meshgrid.dart';
 
 class Puzzle {
@@ -8,6 +9,11 @@ class Puzzle {
   dynamic solution2;
 
   Puzzle() {}
+
+  MeshGrid angleGrid;
+  MeshGrid distanceGrid;
+  MeshGrid orderGrid;
+  int asteroidCount = 0;
 
   List<String> parseInputByLine() {
     return input = inputFile.readAsStringSync().trim().split("\n");
@@ -37,6 +43,23 @@ class Puzzle {
       }
     }
     return grid;
+  }
+
+  void parseInputWithAngles(int pX, int pY) {
+    parseInputByLine();
+    angleGrid = new MeshGrid(input[0].length, input.length, double.nan);
+    distanceGrid = new MeshGrid(input[0].length, input.length, 0);
+    for (var i = 0; i < input.length; i++) {
+      for (var j = 0; j < input[i].length; j++) {
+        if (input[i][j] == "#") {
+          // calculate angle
+          angleGrid[i][j] = (atan2(pX - i, pY - j) * 180 / pi);
+          // calculate Manhattan distance
+          distanceGrid[i][j] = (pX - i).abs() + (pY - j).abs();
+          asteroidCount++;
+        }
+      }
+    }
   }
 
   int countAsteroids(MeshGrid grid, int pX, int pY) {
@@ -87,7 +110,9 @@ class Puzzle {
                   } else {
                     grid[checkX][checkY] = 4;
                   }
-                } else if (grid[checkX][checkY] == 3 && asteroidX != -1 && asteroidY != -1) {
+                } else if (grid[checkX][checkY] == 3 &&
+                    asteroidX != -1 &&
+                    asteroidY != -1) {
                   // found an asteroid on the line before
                   if ((pX - checkX).abs() + (pY - checkY).abs() <
                       (pX - asteroidX).abs() + (pY - asteroidY).abs()) {
@@ -110,8 +135,8 @@ class Puzzle {
         }
       }
     }
-    print(grid);
-    print(asteroidCount);
+    //print(grid);
+    //print(asteroidCount);
     return asteroidCount;
   }
 
@@ -131,7 +156,7 @@ class Puzzle {
     countAsteroids(grid, pX, pY);
   }
 
-  void solve() {
+  void solvePart1() {
     var grid = parseInputFile();
     var bestX = 0, bestY = 0, bestFitness = 0;
     for (int i = 0; i < grid.width; i++) {
@@ -149,6 +174,70 @@ class Puzzle {
       }
     }
     solution1 = "($bestX, $bestY): $bestFitness"; // 385 - x - too high
+    // 344 @ 34, 30
+  }
+
+  void solvePart2() {
+    parseInputWithAngles(34, 30);
+    print(angleGrid);
+    print(distanceGrid);
+    // upwards is 90.0
+    // first go from 90 -> 180
+    // then -180 -> 90
+    num degree = 90.0;
+    orderGrid = new MeshGrid(angleGrid.width, angleGrid.height);
+
+    fillOrderGrid(degree);
+
+    for (int i = 0; i < angleGrid.width; i++) {
+      for (int j = 0; j < angleGrid.height; j++) {
+        if (orderGrid[i][j] == 200) {
+          print("$j $i"); // 3227 too high
+        }
+      }
+    }
+
+    print(orderGrid);
+  }
+
+  void fillOrderGrid(num degree) {
+    int order = 1;
+    while (order <= 200) {
+      int bestX = -1, bestY = -1, bestD = 10000;
+      for (int i = 0; i < angleGrid.width; i++) {
+        for (int j = 0; j < angleGrid.height; j++) {
+          if (!angleGrid[i][j].isNaN &&
+              angleGrid[i][j] == degree &&
+              distanceGrid[i][j] < bestD) {
+            bestX = i;
+            bestY = j;
+            bestD = distanceGrid[i][j];
+          }
+        }
+      }
+      orderGrid[bestX][bestY] = order;
+      angleGrid[bestX][bestY] = double.nan;
+      distanceGrid[bestX][bestY] = 0;
+      order++;
+
+      // find next degree
+      if (degree == 180.0) {
+        degree = -180.0;
+      }
+      var min = 10000.0;
+      num currentDelta = 10000.0;
+      for (int i = 0; i < angleGrid.width; i++) {
+        for (int j = 0; j < angleGrid.height; j++) {
+          if (!angleGrid[i][j].isNaN &&
+              angleGrid[i][j] > degree &&
+              (angleGrid[i][j] - degree).abs() < currentDelta) {
+            currentDelta = (angleGrid[i][j] - degree).abs();
+            min = angleGrid[i][j];
+          }
+        }
+      }
+      degree = min;
+    }
   }
 }
 
@@ -158,7 +247,8 @@ void main() {
   Stopwatch stopwatch = new Stopwatch();
   stopwatch.start();
   //puzzle.solveTest();
-  puzzle.solve();
+  //puzzle.solvePart1();
+  puzzle.solvePart2();
   stopwatch.stop();
 
   print("Solution to part1: ${puzzle.solution1}");

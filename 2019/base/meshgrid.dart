@@ -2,12 +2,12 @@ library meshgrid;
 
 import 'dart:mirrors';
 
-class MeshGrid implements List<List<int>> {
-  final List<List<int>> _grid;
+class MeshGrid implements List<List<num>> {
+  final List<List<num>> _grid;
   int get width => _grid.length;
   int get height => _grid[0].length;
 
-  MeshGrid(int width, int height, [int filler = 0])
+  MeshGrid(int width, int height, [num filler = 0])
       : _grid =
             new List.generate(width, (_) => new List.filled(height, filler));
 
