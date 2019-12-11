@@ -2,7 +2,7 @@ import 'dart:io';
 import '../base/meshgrid.dart';
 
 class Puzzle {
-  final inputFile = new File(".\\10\\input.txt");
+  var inputFile = new File(".\\10\\input.txt");
   List<String> input = new List<String>();
   dynamic solution1;
   dynamic solution2;
@@ -15,11 +15,6 @@ class Puzzle {
 
   List<String> parseInputBySeparator({String separator = ","}) {
     return input = inputFile.readAsStringSync().trim().split(separator);
-  }
-
-  int leastCommonMultiple(int a, int b) {
-    if (a == 0 || b == 0) return 0;
-    return (a * b) ~/ greatestCommonDivisor(a, b);
   }
 
   int greatestCommonDivisor(int a, int b) {
@@ -52,11 +47,12 @@ class Puzzle {
     // 4 = invalidated    asteroid
     // 99 - STATION
     var asteroidCount = 0;
-
+    grid[pX][pY] = 99;
     // fill it in
     for (int i = 0; i < grid.width; i++) {
       for (int j = 0; j < grid.height; j++) {
         if (grid[i][j] == 0 || grid[i][j] == 2) {
+          //print(grid);
           var d = greatestCommonDivisor((i - pX).abs(), (j - pY).abs());
           var stepX = d != 0 ? (pX - i) ~/ d : (pX - i) == 0 ? 0 : 1;
           var stepY = d != 0 ? (pY - j) ~/ d : (pY - j) == 0 ? 0 : 1;
@@ -85,17 +81,26 @@ class Puzzle {
                   if (asteroidX == -1 && asteroidY == -1) {
                     // haven't found an asteroid yet
                     asteroidCount++;
+                    grid[checkX][checkY] = 3;
+                    asteroidX = checkX;
+                    asteroidY = checkY;
                   } else {
-                    // found an asteroid on the line before
-                    grid[asteroidX][asteroidY] = 4; // invalidate the asteroid
+                    grid[checkX][checkY] = 4;
                   }
-                  asteroidX = checkX;
-                  asteroidY = checkY;
-                  grid[checkX][checkY] = 3;
+                } else if (grid[checkX][checkY] == 3 && asteroidX != -1 && asteroidY != -1) {
+                  // found an asteroid on the line before
+                  if ((pX - checkX).abs() + (pY - checkY).abs() <
+                      (pX - asteroidX).abs() + (pY - asteroidY).abs()) {
+                    grid[asteroidX][asteroidY] =
+                        4; // invalidate the old found asteroid
+                    asteroidCount--;
+                    asteroidX = checkX;
+                    asteroidY = checkY;
+                  }
                 } else if (grid[checkX][checkY] == 0) {
                   grid[checkX][checkY] = 1;
                 }
-                //print(grid.toString());
+                //print(grid);
                 //print("x: $checkX y: $checkY count: $asteroidCount");
               }
               checkX += stepX;
@@ -105,23 +110,22 @@ class Puzzle {
         }
       }
     }
-
-    //print(asteroidCount);
+    print(grid);
+    print(asteroidCount);
     return asteroidCount;
   }
 
   void solveTest() {
     var grid = new MeshGrid(5, 5, 0);
-    var pX = 4;
-    var pY = 3;
-    grid[pX][pY] = 99;
+    var pX = 0;
+    var pY = 4;
     grid[4][4] = 2;
     grid[2][0] = 2;
     grid[2][1] = 2;
     grid[2][2] = 2;
     grid[2][3] = 2;
     grid[2][4] = 2;
-    grid[3][4] = 2;
+    grid[3][1] = 2;
     grid[0][4] = 2;
     grid[0][1] = 2;
     countAsteroids(grid, pX, pY);
@@ -133,14 +137,14 @@ class Puzzle {
     for (int i = 0; i < grid.width; i++) {
       for (int j = 0; j < grid.height; j++) {
         if (grid[i][j] == 2) {
-          var counterGrid = parseInputFile(); // ugh. Can't easily clone an object in dart...
+          var counterGrid =
+              parseInputFile(); // ugh. Can't easily clone an object in dart...
           var asteroidCount = countAsteroids(counterGrid, i, j);
-          if (asteroidCount > bestFitness){
+          if (asteroidCount > bestFitness) {
             bestFitness = asteroidCount;
             bestX = i;
-            bestY= j;
+            bestY = j;
           }
-
         }
       }
     }
