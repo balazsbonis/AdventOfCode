@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
-import '../base/meshgrid.dart';
+import '../base/data_structures.dart';
+import '../base/handy_utils.dart';
 
 class Puzzle {
   var inputFile = new File(".\\10\\input.txt");
@@ -21,17 +22,6 @@ class Puzzle {
 
   List<String> parseInputBySeparator({String separator = ","}) {
     return input = inputFile.readAsStringSync().trim().split(separator);
-  }
-
-  int greatestCommonDivisor(int a, int b) {
-    if (a == 0 || b == 0) return 0; // technically should throw exception here
-    int remainder = 0;
-    do {
-      remainder = a % b;
-      a = b;
-      b = remainder;
-    } while (b != 0);
-    return a;
   }
 
   MeshGrid parseInputFile() {
@@ -76,7 +66,7 @@ class Puzzle {
       for (int j = 0; j < grid.height; j++) {
         if (grid[i][j] == 0 || grid[i][j] == 2) {
           //print(grid);
-          var d = greatestCommonDivisor((i - pX).abs(), (j - pY).abs());
+          var d = MathUtils.greatestCommonDivisor((i - pX).abs(), (j - pY).abs());
           var stepX = d != 0 ? (pX - i) ~/ d : (pX - i) == 0 ? 0 : 1;
           var stepY = d != 0 ? (pY - j) ~/ d : (pY - j) == 0 ? 0 : 1;
           bool halt = false;
