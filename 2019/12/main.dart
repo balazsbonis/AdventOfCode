@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../base/handy_utils.dart';
 
 class JovianMoon {
   int positionX, positionY, positionZ;
@@ -20,7 +21,7 @@ class JovianMoon {
   }
 
   void calculateVelocity(List<JovianMoon> otherMoons) {
-      for (var moon in otherMoons) {
+    for (var moon in otherMoons) {
       if (moon.positionX > this.positionX) {
         velocityX++;
       } else if (moon.positionX < this.positionX) {
@@ -103,7 +104,7 @@ class Puzzle {
     var ganymedeX = new JovianMoon(-5, 0, 0);
     var callistoX = new JovianMoon(4, 0, 0);
 
-    int step = 0;
+    int step = 1;
     do {
       step++;
       ioX.calculateVelocity([europaX, ganymedeX, callistoX]);
@@ -132,7 +133,7 @@ class Puzzle {
     var ganymedeX = new JovianMoon(0, 4, 0);
     var callistoX = new JovianMoon(0, 6, 0);
 
-    int step = 0;
+    int step = 1;
     do {
       step++;
       ioX.calculateVelocity([europaX, ganymedeX, callistoX]);
@@ -143,10 +144,10 @@ class Puzzle {
       europaX.applyVelocity();
       ganymedeX.applyVelocity();
       callistoX.applyVelocity();
-    } while (!(ioX.positionX == 1 &&
-        europaX.positionX == -10 &&
-        ganymedeX.positionX == 4 &&
-        callistoX.positionX == 6));
+    } while (!(ioX.positionY == 1 &&
+        europaX.positionY == -10 &&
+        ganymedeX.positionY == 4 &&
+        callistoX.positionY == 6));
     print("Y: ${step}");
     return step;
   }
@@ -161,7 +162,7 @@ class Puzzle {
     var ganymedeX = new JovianMoon(0, 0, 9);
     var callistoX = new JovianMoon(0, 0, -2);
 
-    int step = 0;
+    int step = 1;
     do {
       step++;
       ioX.calculateVelocity([europaX, ganymedeX, callistoX]);
@@ -172,10 +173,10 @@ class Puzzle {
       europaX.applyVelocity();
       ganymedeX.applyVelocity();
       callistoX.applyVelocity();
-    } while (!(ioX.positionX == 4 &&
-        europaX.positionX == -8 &&
-        ganymedeX.positionX == 9 &&
-        callistoX.positionX == -2));
+    } while (!(ioX.positionZ == 4 &&
+        europaX.positionZ == -8 &&
+        ganymedeX.positionZ == 9 &&
+        callistoX.positionZ == -2));
     print("Z: ${step}");
     return step;
   }
@@ -214,9 +215,14 @@ void main() {
   Stopwatch stopwatch = new Stopwatch();
   stopwatch.start();
   //puzzle.solvePart1();
-  puzzle.solvePart2X();
-  puzzle.solvePart2Y();
-  puzzle.solvePart2Z();
+  var xx = puzzle.solvePart2X();
+  var yy = puzzle.solvePart2Y();
+  var zz = puzzle.solvePart2Z();
+  print(MathUtils.leastCommonMultiple(MathUtils.leastCommonMultiple(xx, yy),
+      zz)); //5319532618758035 -x-too high
+      // 332477126821644
+      // 37324 -x-too low
+      // 135915 -x-too low
   stopwatch.stop();
 
   print("Solution to part1: ${puzzle.solution1}");
