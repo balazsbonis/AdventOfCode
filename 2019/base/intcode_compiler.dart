@@ -16,7 +16,7 @@ class Tape {
   }
 
   void setValue(int position, int value) {
-    if (memory.length < position) {
+    if (memory.length <= position) {
       memory = memory
           .followedBy(new List<int>.filled(position - memory.length + 2, 0))
           .toList();
@@ -37,6 +37,7 @@ class Runner {
   static int relativeBase = 0;
   static bool printToConsole = false;
   int lastOutput = -1;
+  Function(int) outputCallback = null;
 
   Runner(List<int> memory, [this.params]) {
     tape = new Tape(memory, 0);
@@ -58,6 +59,9 @@ class Runner {
       var result = instruction.work();
       if (result != null) {
         lastOutput = result;
+        if (outputCallback != null){
+          outputCallback(lastOutput);
+        }
       }
       tape.pointer += instruction.skip;
     }
@@ -65,6 +69,10 @@ class Runner {
 
   void enablePrint() {
     printToConsole = true;
+  }
+
+  void setOutputCallback(Function callback){
+    outputCallback = callback;
   }
 }
 
