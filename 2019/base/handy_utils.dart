@@ -12,3 +12,16 @@ class MathUtils {
     return a;
   }
 }
+
+extension Linq on Iterable {
+  sum([fn(x)]) => this.fold(
+      0, (prev, element) => prev + (fn != null ? fn(element) : element));
+
+  min() => this.fold(double.maxFinite,
+      (prev, element) => prev.compareTo(element) > 0 ? element : prev);
+
+  max() => this.fold(double.minPositive,
+      (prev, element) => prev.compareTo(element) > 0 ? prev : element);
+
+  average() => sum() / this.length;
+}
