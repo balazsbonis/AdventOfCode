@@ -26,6 +26,10 @@ class MeshGrid implements List<List<num>> {
     }
     return result;
   }
+
+  List<num> flatten(){
+    return _grid.reduce((value, element) => value.followedBy(element).toList());
+  }
 }
 
 class Node {

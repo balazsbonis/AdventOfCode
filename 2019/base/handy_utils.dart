@@ -11,11 +11,15 @@ class MathUtils {
     } while (b != 0);
     return a;
   }
+
+  static int leastCommonMultiple(int a, int b) {
+    return (a * b) ~/ greatestCommonDivisor(a, b);
+  }
 }
 
 extension Linq on Iterable {
-  sum([fn(x)]) => this.fold(
-      0, (prev, element) => prev + (fn != null ? fn(element) : element));
+  sum([fn(x)]) => this
+      .fold(0, (prev, element) => prev + (fn != null ? fn(element) : element));
 
   min() => this.fold(double.maxFinite,
       (prev, element) => prev.compareTo(element) > 0 ? element : prev);
