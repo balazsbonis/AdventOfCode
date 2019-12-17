@@ -66,11 +66,11 @@ class Puzzle {
         for (var y = 0; y < 6; y++) {
           if (l[x][y] == 2) continue;
           if (l[x][y] == 0) {
-            fillRect(image, x * 10, y * 10, (x + 1) * 10, (y + 1) * 10,
-                getColor(0, 0, 0));
+            fillRect(image, x * 10, y * 10, ((x + 1) * 10 - 1),
+                ((y + 1) * 10 - 1), getColor(0, 0, 0));
           } else {
-            fillRect(image, x * 10, y * 10, (x + 1) * 10, (y + 1) * 10,
-                getColor(255, 255, 255));
+            fillRect(image, x * 10, y * 10, ((x + 1) * 10 - 1),
+                ((y + 1) * 10 - 1), getColor(255, 255, 255));
           }
         }
       }
