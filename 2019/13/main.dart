@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:image/image.dart';
 
@@ -14,11 +15,12 @@ class Puzzle {
   int curOutType = 0; // 0 = x, 1 = y, 2 = object
   int curX, curY;
   int ballX, ballY;
-  int padX = 17;
+  int padX = 17, padY = 20;
   bool score = false, play = false;
   List<int> params;
+  Random random = new Random();
 
-  GifEncoder encoder = new GifEncoder(repeat: 1, delay: 10);
+  GifEncoder encoder = new GifEncoder(repeat: 1);
   Image image = Image(380, 200);
 
   Puzzle() {}
@@ -62,7 +64,7 @@ class Puzzle {
       if (!play) {
         print("PLAY START");
         play = true;
-        encoder.addFrame(image, duration: 10);
+        encoder.addFrame(image, duration: 3);
       }
     } else {
       switch (curOutType) {
@@ -86,11 +88,12 @@ class Puzzle {
               color = getColor(255, 0, 0);
               break;
             case 3:
-              color = getColor(0, 255, 0);
+              color = getColor(50, 255, 50);
               padX = curX;
+              padY = curY;
               break;
             case 4:
-              color = getColor(0, 0, 255);
+              color = getColor(0, 128, 255);
               ballX = curX;
               ballY = curY;
               if (ballX > padX) params.add(1);
@@ -99,8 +102,8 @@ class Puzzle {
           }
           fillRect(image, curX * 10, curY * 10, ((curX + 1) * 10 - 1),
               ((curY + 1) * 10 - 1), color);
-          if (play) {
-            encoder.addFrame(image, duration: 10);
+          if (play && res != 0) {
+            encoder.addFrame(image, duration: 3);
           }
           break;
       }
