@@ -3,13 +3,22 @@ library data_structures;
 import 'dart:mirrors';
 
 class MeshGrid implements List<List<num>> {
-  final List<List<num>> _grid;
+  List<List<num>> _grid;
   int get width => _grid.length;
   int get height => _grid[0].length;
 
   MeshGrid(int width, int height, [num filler = 0])
       : _grid =
             new List.generate(width, (_) => new List.filled(height, filler));
+
+  MeshGrid.fromMap(Map coords, int width, int height) {
+    _grid = new List.generate(width, (_) => new List.filled(height, 0));
+    for (var c in coords.keys) {
+      var x = int.parse(c.split(",")[0]);
+      var y = int.parse(c.split(",")[1]);
+      _grid[width ~/ 2 - x][height ~/ 2 - y] = coords[c];
+    }
+  }
 
   noSuchMethod(Invocation invocation) => //super.noSuchMethod(invocation);
       reflect(_grid).delegate(invocation);
@@ -27,7 +36,7 @@ class MeshGrid implements List<List<num>> {
     return result;
   }
 
-  List<num> flatten(){
+  List<num> flatten() {
     return _grid.reduce((value, element) => value.followedBy(element).toList());
   }
 }
@@ -70,7 +79,7 @@ class Node {
     this.nodes = _buildTree(this, 1);
   }
 
-  int getDistance(String source, String target){
+  int getDistance(String source, String target) {
     var sourceNode = findNode(source);
     return _getDistance(sourceNode, target, -1); // initial node doesn't count
   }
