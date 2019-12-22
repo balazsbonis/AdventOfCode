@@ -11,6 +11,8 @@ class Puzzle {
   List<int> moves;
   Map screen = new Map();
   int curX = 0, curY = 0, curStep = 0, curDirection = 1;
+  int oxygenX = 0, oxygenY = 0;
+  int fieldCount = 0;
 
   Puzzle() {
     moves = new List<int>();
@@ -36,12 +38,6 @@ class Puzzle {
   }
 
   findOxygen(int res) {
-    if (solution1 != null){
-      return;
-    }
-    printScreen(screen);
-    print(
-        "$curX, $curY, $curDirection, ${moves.length}, ${moves.length > 0 ? moves.last : -1}");
     var actX = curX, actY = curY;
     switch (params.last) {
       case 1:
@@ -63,6 +59,7 @@ class Puzzle {
         screen["$actX,$actY"] = -1;
         break;
       case 1:
+      case 2:
         // empty space, moved there
         if (!screen.containsKey("$actX,$actY")) {
           screen["$actX,$actY"] = ++curStep;
@@ -72,10 +69,12 @@ class Puzzle {
         }
         curX = actX;
         curY = actY;
-        break;
-      case 2:
         //found tha thing
-        solution1 = curStep + 1;
+        if (res == 2) {
+          oxygenX = curX;
+          oxygenY = curY;
+          solution1 = curStep;
+        }
         break;
       default:
     }
@@ -90,25 +89,71 @@ class Puzzle {
       curDirection = 2;
     } else {
       // all 4 sides explored, take 1 step back!
-      if (moves.last == 1) {
-        curDirection = 2;
+      if (moves.length == 0) {
+        //printScreen(screen);
+        curDirection = 0;
+        calculateSolution2();
       } else {
-        if (moves.last == 2) {
-          curDirection = 1;
+        if (moves.last == 1) {
+          curDirection = 2;
         } else {
-          if (moves.last == 4) {
-            curDirection = 3;
+          if (moves.last == 2) {
+            curDirection = 1;
           } else {
-            if (moves.last == 3) {
-              curDirection = 4;
+            if (moves.last == 4) {
+              curDirection = 3;
+            } else {
+              if (moves.last == 3) {
+                curDirection = 4;
+              }
             }
           }
         }
+
+        moves.removeLast();
       }
-      moves.removeLast();
     }
     params.add(curDirection);
   }
+
+  void calculateSolution2() {
+    int minutes = 0;
+    var fc = screen.values.where((x) => x != -1).length; // maybe -1?
+    screen["$oxygenX,$oxygenY"] = 0;
+    var lookaround = ["$oxygenX,$oxygenY"];
+    var toCheck = new List<String>();
+    var visited = ["$oxygenX,$oxygenY"];
+
+    while (visited.length != fc) {
+      minutes++;
+      // check neighbours for each new item
+      for (var l in lookaround) {
+        var coords = l.split(",");
+        var x = int.parse(coords[0]);
+        var y = int.parse(coords[1]);
+        // northern-southern neighbours
+        if (screen["$x,${y - 1}"] != -1 && !visited.contains("$x,${y - 1}"))
+          toCheck.add("$x,${y - 1}");
+        if (screen["$x,${y + 1}"] != -1 && !visited.contains("$x,${y + 1}"))
+          toCheck.add("$x,${y + 1}");
+        // eastern-western
+        if (screen["${x - 1},$y"] != -1 && !visited.contains("${x - 1},$y"))
+          toCheck.add("${x - 1},$y");
+        if (screen["${x + 1},$y"] != -1 && !visited.contains("${x + 1},$y"))
+          toCheck.add("${x + 1},$y");
+      }
+      lookaround.clear();
+      for (var c in toCheck) {
+        screen[c] = minutes;
+        visited.add(c);
+      }
+      lookaround.addAll(toCheck);
+      toCheck.clear();
+      printScreen(screen);
+    }
+
+    solution2 = minutes;
+  } //370
 
   void setDirection() {
     if (screen["${curX - 1},$curY"] == null) {
