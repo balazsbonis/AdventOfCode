@@ -135,19 +135,6 @@ class Puzzle {
     }
     return ore;
   }
-
-  List<Reaction> buildTree(Reaction ending) {
-    // build graph
-    for (var reagent in ending.reagents) {
-      ending.children
-          .addAll(reactions.where((f) => reagent.name == f.result.name));
-    }
-    for (var n in ending.children) {
-      n.children = buildTree(n);
-    }
-    print(inventory);
-    return ending.children;
-  }
 }
 
 void main() {
