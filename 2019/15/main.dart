@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:image/image.dart';
+
 import '../base/intcode_compiler.dart';
 import '../base/data_structures.dart';
 
@@ -12,7 +14,9 @@ class Puzzle {
   Map screen = new Map();
   int curX = 0, curY = 0, curStep = 0, curDirection = 1;
   int oxygenX = 0, oxygenY = 0;
-  int fieldCount = 0;
+
+  GifEncoder encoder = new GifEncoder(repeat: 1);
+  Image image = Image(500, 500);
 
   Puzzle() {
     moves = new List<int>();
@@ -31,10 +35,14 @@ class Puzzle {
         parseInputBySeparator().map((String s) => int.parse(s)).toList();
     params = [1]; // 1 = N, 2 = S, 3 = W, 4 = E
     screen["0,0"] = 99;
+    fill(image, getColor(0, 0, 0));
+    encoder.addFrame(image, duration: 3);
+
     new Runner(memory, params)
       ..reset()
       ..setOutputCallback((res) => findOxygen(res))
       ..run();
+    File('output15.gif').writeAsBytesSync(encoder.finish());
   }
 
   findOxygen(int res) {
@@ -74,10 +82,25 @@ class Puzzle {
           oxygenX = curX;
           oxygenY = curY;
           solution1 = curStep;
+          fillRect(
+              image,
+              (250 - curX * 10),
+              (250 - curY * 10),
+              250 - ((curX + 1) * 10 - 1),
+              250 - ((curY + 1) * 10 - 1),
+              getColor(0, 255, 255));
         }
         break;
       default:
     }
+    fillRect(
+        image,
+        (250 - curX * 10),
+        (250 - curY * 10),
+        250 - ((curX + 1) * 10 - 1),
+        250 - ((curY + 1) * 10 - 1),
+        getColor(255, 160, 160));
+    encoder.addFrame(image, duration: 3);
     // set direction
     if (screen["${curX - 1},$curY"] == null) {
       curDirection = 3;
@@ -145,11 +168,22 @@ class Puzzle {
       lookaround.clear();
       for (var c in toCheck) {
         screen[c] = minutes;
+        var coords = c.split(",");
+        var x = int.parse(coords[0]);
+        var y = int.parse(coords[1]);
         visited.add(c);
+        fillRect(
+            image,
+            (250 - x * 10),
+            (250 - y * 10),
+            250 - ((x + 1) * 10 - 1),
+            250 - ((y + 1) * 10 - 1),
+            getColor(128, 128, 255));
       }
       lookaround.addAll(toCheck);
       toCheck.clear();
-      printScreen(screen);
+      //printScreen(screen);
+      encoder.addFrame(image, duration: 3);
     }
 
     solution2 = minutes;
