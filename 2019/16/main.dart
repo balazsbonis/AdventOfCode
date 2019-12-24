@@ -19,15 +19,49 @@ class Puzzle {
 
   void solve() {
     parseInputByLine();
-    solution1 = calculateFFT(input[0], 100);
+    solution1 = calculateFFT(input[0], 100).substring(0,8);
+
+    var offset = int.parse(input[0].substring(0, 7));
+    var tail = input[0].substring(offset % input[0].length);
+
+    var input2 = tail +
+        [
+          for (int i = 0;
+              i <
+                  (input[0].length * 10000 - offset - tail.length) ~/
+                      input[0].length;
+              i++)
+            input[0]
+        ].join();
+
+    List<int> result = [];
+    var count = 0;
+    for (int phase = 0; phase < 100; phase++) {
+      for (int i = 0; i < input2.length; i++) {
+        count += int.parse(input2[i]);
+      }
+
+      // first one goes in as is
+      result.add(count % 10);
+      for (int j = 1; j < input2.length; j++) {
+        count -= int.parse(input2[j - 1]);
+        result.add(count % 10);
+      }
+
+      input2 = result.join();
+      result.clear();
+      count = 0;
+    }
+
+    solution2 = input2.substring(0, 8);  // 38673719 - x - too low
   }
 
   void solveTest() {
-    var testInput = "12345678";
-    calculateFFT(testInput, 4);
+    var testInput = "99345678";
+    calculateFFT(testInput, 30);
   }
 
-  String calculateFFT(String input, int phaseCount){
+  String calculateFFT(String input, int phaseCount) {
     List<int> result = [];
     var count = 0;
     for (int phase = 0; phase < phaseCount; phase++) {
