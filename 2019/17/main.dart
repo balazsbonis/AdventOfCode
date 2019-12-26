@@ -48,7 +48,26 @@ class Puzzle {
       }
     }
 
+//C B C A B A C A B A
+// A = L,4 L,6 L,8 L,8
+// B = R,10 L,8 L,8 L,10
+// C = L,8 R,10, L,10
     print(meshgrid.toASCIIString());
+
+    memory[0] = 2;
+    var ascii = AsciiCodec();
+    params = ascii.encode("C,B,C,A,B,A,C,A,B,A\n");
+    params += ascii.encode("L,4,L,6,L,8,L,8\n");
+    params += ascii.encode("R,10,L,8,L,8,L,10\n");
+    params += ascii.encode("L,8,R,10,L,10\n");
+    params += ascii.encode("n\n");
+
+    print(params);
+
+    var run = new Runner(memory, params)
+      ..reset()
+      ..run();
+    solution2 = run.lastOutput;
   }
 
   void buildPicture(int res) {
