@@ -1,12 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
+import '../base/intcode_compiler.dart';
+import '../base/data_structures.dart';
 
 class Puzzle {
-  final inputFile = new File(".\\15\\input.txt");
+  final inputFile = new File(".\\17\\input.txt");
   List<String> input = new List<String>();
   dynamic solution1;
   dynamic solution2;
+  List<int> params;
+  MeshGrid meshgrid;
+  int curX = 0, curY = 0;
 
-  Puzzle() {}
+  Puzzle() {
+    meshgrid = new MeshGrid(41, 51);
+  }
 
   List<String> parseInputByLine() {
     return input = inputFile.readAsStringSync().trim().split("\n");
@@ -16,7 +24,42 @@ class Puzzle {
     return input = inputFile.readAsStringSync().trim().split(separator);
   }
 
-  void solve() {}
+  void solve() {
+    var memory =
+        parseInputBySeparator().map((String s) => int.parse(s)).toList();
+    params = [];
+
+    new Runner(memory, params)
+      ..reset()
+      ..setOutputCallback((res) => buildPicture(res))
+      ..run();
+
+    solution1 = 0;
+    for (int i = 1; i < meshgrid.width - 1; i++) {
+      for (int j = 1; j < meshgrid.height - 1; j++) {
+        if (meshgrid[i][j] == 35 &&
+            meshgrid[i - 1][j] == 35 &&
+            meshgrid[i + 1][j] == 35 &&
+            meshgrid[i][j - 1] == 35 &&
+            meshgrid[i][j + 1] == 35) {
+          meshgrid[i][j] = 79;
+          solution1 += i * j;
+        }
+      }
+    }
+
+    print(meshgrid.toASCIIString());
+  }
+
+  void buildPicture(int res) {
+    if (res == 10) {
+      curX++;
+      curY = 0;
+    } else {
+      meshgrid[curX][curY] = res;
+      curY++;
+    }
+  }
 
   void solveTest() {}
 }

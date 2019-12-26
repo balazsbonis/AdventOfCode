@@ -1,11 +1,13 @@
 library data_structures;
 
+import 'dart:convert';
 import 'dart:mirrors';
 
 class MeshGrid implements List<List<num>> {
   List<List<num>> _grid;
   int get width => _grid.length;
   int get height => _grid[0].length;
+  final AsciiCodec ascii = AsciiCodec();
 
   MeshGrid(int width, int height, [num filler = 0])
       : _grid =
@@ -38,6 +40,16 @@ class MeshGrid implements List<List<num>> {
 
   List<num> flatten() {
     return _grid.reduce((value, element) => value.followedBy(element).toList());
+  }
+
+  String toASCIIString(){    
+    String result = "";
+    for (int i = 0; i < width; i++) {
+      result += "[";
+      result += ascii.decode(this[i].cast<int>());
+      result += "]\n";
+    }
+    return result;
   }
 }
 
