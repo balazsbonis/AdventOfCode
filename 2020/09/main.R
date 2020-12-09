@@ -1,9 +1,9 @@
 input <-
-  scan("c:\\Work\\Code\\AdventOfCode\\2020\\09\\test.txt",
+  scan("c:\\Work\\Code\\AdventOfCode\\2020\\09\\input.txt",
        numeric(),
        sep = "\n")
 
-preamble_length <- 5
+preamble_length <- 25
 start_index <- 1
 target_number <- 0 # part1
 
