@@ -1,9 +1,8 @@
-f <- file("c:\\Work\\Code\\AdventOfCode\\2020\\12\\test.txt", "r")
+f <- file("c:\\Work\\Code\\AdventOfCode\\2020\\12\\input.txt", "r")
 
 # part2
 ship <- c(0, 0)
 waypoint <- c(10, 1)
-direction <- "E"
 
 while (TRUE) {
   line <- readLines(f, n = 1)
