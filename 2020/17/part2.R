@@ -1,5 +1,5 @@
 input <-
-  scan("c:\\Work\\Code\\AdventOfCode\\2020\\17\\test.txt",
+  scan("c:\\Work\\Code\\AdventOfCode\\2020\\17\\input.txt",
        character(),
        sep = "\n")
 
