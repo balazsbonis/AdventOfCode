@@ -9,6 +9,7 @@ input <-
     )
   )
 
+# part 1
 calculate_left_to_right <- function (expr) {
   operation <- "+"
   value <- 0
@@ -24,10 +25,30 @@ calculate_left_to_right <- function (expr) {
   return(value)
 }
 
+# part 2
+calculate_stupid_order <- function (expr) {
+  multiplications <- which(expr == "*")
+  while (length(multiplications) > 0) {
+    op1 <- strtoi(expr[multiplications[1] - 1])
+    op2 <- strtoi(expr[multiplications[1] + 1])
+    if (multiplications[1] == 2) {
+      expr <- c(op1 * op2, expr[(multiplications[1] + 2):length(expr)])
+    } else if (multiplications[1] == length(expr) - 1) {
+      expr <-
+        c(expr[1:(multiplications[1] - 2)], op1 * op2)
+    } else {
+      expr <-
+        c(expr[1:(multiplications[1] - 2)], op1 * op2, expr[(multiplications[1] +
+                                                               2):length(expr)])
+    }
+    multiplications <- which(expr == "*")
+  }
+}
+
 evaluate_expression <- function(tokens, start, finish) {
   expr <-
     tokens[(start + 1):(finish - 1)]
-  calculate_left_to_right(expr)
+  value <- calculate_left_to_right(expr)
   # avoid NAs when the first or last character is ( or )
   if (parenthesis_end == length(tokens)) {
     return(c(tokens[1:(start - 1)], value))
@@ -39,13 +60,13 @@ evaluate_expression <- function(tokens, start, finish) {
   }
 }
 
-
+res <- 0
 for (line in input) {
   # check if there are parentheses
   tokens <- strsplit(line, "")[[1]]
   while (any(tokens == "(")) {
     # break them up, find the deepest nested expression
-    parenthesis_start <- 0
+    parenthesis_start <- 1
     parenthesis_end <- 0
     for (i in 1:length(tokens)) {
       if (tokens[i] == "(") {
@@ -62,5 +83,5 @@ for (line in input) {
       }
     }
   }
-  result <- calculate_left_to_right(tokens)
+  res <- res + calculate_left_to_right(tokens)
 }
