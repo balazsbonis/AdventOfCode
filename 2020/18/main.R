@@ -3,7 +3,7 @@ input <-
     " ",
     "",
     scan(
-      "c:\\Work\\Code\\AdventOfCode\\2020\\18\\test.txt",
+      "c:\\Work\\Code\\AdventOfCode\\2020\\18\\input.txt",
       character(),
       sep = "\n"
     )
@@ -27,28 +27,31 @@ calculate_left_to_right <- function (expr) {
 
 # part 2
 calculate_stupid_order <- function (expr) {
-  multiplications <- which(expr == "*")
-  while (length(multiplications) > 0) {
-    op1 <- strtoi(expr[multiplications[1] - 1])
-    op2 <- strtoi(expr[multiplications[1] + 1])
-    if (multiplications[1] == 2) {
-      expr <- c(op1 * op2, expr[(multiplications[1] + 2):length(expr)])
-    } else if (multiplications[1] == length(expr) - 1) {
+  additions <- which(expr == "+")
+  while (length(additions) > 0) {
+    op1 <- strtoi(expr[additions[1] - 1])
+    op2 <- strtoi(expr[additions[1] + 1])
+    if (additions[1] == 2 && length(expr) == 3) {
+      expr <- c(op1 + op2)
+    } else if (additions[1] == 2) {
+      expr <- c(op1 + op2, expr[(additions[1] + 2):length(expr)])
+    } else if (additions[1] == length(expr) - 1) {
       expr <-
-        c(expr[1:(multiplications[1] - 2)], op1 * op2)
+        c(expr[1:(additions[1] - 2)], op1 + op2)
     } else {
       expr <-
-        c(expr[1:(multiplications[1] - 2)], op1 * op2, expr[(multiplications[1] +
+        c(expr[1:(additions[1] - 2)], op1 + op2, expr[(additions[1] +
                                                                2):length(expr)])
     }
-    multiplications <- which(expr == "*")
+    additions <- which(expr == "+")
   }
+  return (prod(strtoi(expr[expr != "*"])))
 }
 
 evaluate_expression <- function(tokens, start, finish) {
   expr <-
     tokens[(start + 1):(finish - 1)]
-  value <- calculate_left_to_right(expr)
+  value <- calculate_stupid_order(expr)
   # avoid NAs when the first or last character is ( or )
   if (parenthesis_end == length(tokens)) {
     return(c(tokens[1:(start - 1)], value))
@@ -83,5 +86,5 @@ for (line in input) {
       }
     }
   }
-  res <- res + calculate_left_to_right(tokens)
+  res <- res + calculate_stupid_order(tokens)
 }
