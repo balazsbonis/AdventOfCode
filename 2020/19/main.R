@@ -1,4 +1,3 @@
-library(dplyr)
 input <-
   scan("c:\\Work\\Code\\AdventOfCode\\2020\\19\\input.txt",
        character(),
@@ -51,5 +50,15 @@ for (m in messages) {
   if (regexpr(r, m) == 1) {
     part1 <- part1 + 1
   }
-  
+}
+
+part2 <- 0
+r2_42 <- replace_rules(pp[42])
+r2_31 <- replace_rules(pp[31])
+r2 <-
+  paste("^(", r2_42, "+)((?P<mennyiiiii>", r2_42, "(?&mennyiiiii)?", r2_31, "))$", sep = "")
+for (m in messages) {
+  if (regexpr(r2, m, perl= TRUE) == 1) {
+    part2 <- part2 + 1
+  }
 }
