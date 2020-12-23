@@ -61,3 +61,8 @@ while (TRUE) {
     }
   }
 }
+
+part2<-0
+for (m in mem){
+  part2<-part2+m
+}
