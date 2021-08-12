@@ -14,3 +14,5 @@ doc/api/
 
 .Rhistory
 .Rproj.user
+.RData
+.RDataTmp
