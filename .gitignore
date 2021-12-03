@@ -27,3 +27,5 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+
+symbolCache.db
