@@ -46,7 +46,7 @@ namespace _05
                     {
                         var dirX = Math.Sign(vent.toX - vent.fromX);
                         var dirY = Math.Sign(vent.toY - vent.fromY);
-                        for (int i = vent.fromX, j = vent.fromY; i != vent.toX + dirX || j != vent.toY + dirY; i+=dirX, j += dirY)
+                        for (int i = vent.fromX, j = vent.fromY; i != vent.toX + dirX || j != vent.toY + dirY; i += dirX, j += dirY)
                         {
                             floor[j, i]++;
                         }

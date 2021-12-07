@@ -25,4 +25,4 @@ let main argv =
     printfn "Part 1 - %i" part01
     printfn "Part 2 - %i" part02
     let endingKeyStroke = Console.ReadLine()
-    0 // return an integer exit code 3678 ()
+    0
