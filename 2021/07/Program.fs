@@ -10,7 +10,7 @@ let part01 : int =
 
 
 let fuelBurn length : int =
-    [ 1..length] |> List.sum
+    ((length*length) + length) / 2
 
 let part02 : int =
     let input = File.ReadLines("C:\\Work\\Code\\AdventOfCode\\2021\\07\\input.txt") 
