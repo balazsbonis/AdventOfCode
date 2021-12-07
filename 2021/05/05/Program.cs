@@ -10,12 +10,12 @@ namespace _05
 
     class Program
     {
-        private const int floorSize = 10;
+        private const int floorSize = 1000;
 
         static void Main(string[] args)
         {
             bool part2 = true;
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"demo.txt");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"input.txt");
             var vents = new List<Vent>();
             foreach (var f in File.ReadAllLines(path))
             {
@@ -44,7 +44,12 @@ namespace _05
                     // diagonals
                     if (Math.Abs(vent.fromX - vent.toX) == Math.Abs(vent.fromY - vent.toY))
                     {
-                        
+                        var dirX = Math.Sign(vent.toX - vent.fromX);
+                        var dirY = Math.Sign(vent.toY - vent.fromY);
+                        for (int i = vent.fromX, j = vent.fromY; i != vent.toX + dirX || j != vent.toY + dirY; i+=dirX, j += dirY)
+                        {
+                            floor[j, i]++;
+                        }
                     }
                 }
             }
