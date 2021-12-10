@@ -7,7 +7,7 @@ let main argv =
     let input = File.ReadLines("C:\\Work\\Code\\AdventOfCode\\2021\\10\\input.txt") 
                     |> Seq.toList
     let mutable part1score = 0
-    let mutable part2scores : List<int> = []
+    let mutable part2scores : List<int64> = []
     for line in input do
         let s = new Stack()
         let mutable foundCorruption = false
@@ -33,14 +33,14 @@ let main argv =
         if (foundCorruption = false)
             then
                 printfn "Line is incomplete %s" line
-                let mutable score = 0
+                let mutable score:int64 = 0
                 for i = 0 to s.Count - 1 do
                     let top = s.Pop().ToString().[0]
-                    score <- score * 5 + match top with
-                                            | '(' -> 1
-                                            | '[' -> 2
-                                            | '{' -> 3
-                                            | _ -> 4
+                    score <- score * int64 5 + match top with
+                                                | '(' -> int64 1
+                                                | '[' -> int64 2
+                                                | '{' -> 3
+                                                | _ -> 4
                 part2scores <- part2scores @ [score]
 
     printfn "End part 1 score %i" part1score
