@@ -7,6 +7,7 @@ namespace AdventOfCode2025.Day06
     {
         public static long Part1(string pathToInput)
         {
+            // fuck it I did it in excel :D
             return 0;
         }
 
@@ -18,7 +19,7 @@ namespace AdventOfCode2025.Day06
             char operand = ' ';
             for (int i = 0; i < lines[0].Length; i++)
             {
-                Console.WriteLine($"Processing column {lines[0][i].ToString() + lines[1][i] + lines[2][i] + lines[3][i] + lines[4][i]}");
+                Console.WriteLine($"{lines[0][i].ToString() + lines[1][i] + lines[2][i] + lines[3][i] + lines[4][i]}");
                 if (lines[4][i] != ' ')
                 {
                     operand = lines[4][i];
@@ -29,13 +30,15 @@ namespace AdventOfCode2025.Day06
                     // do the calc
                     if (operand == '+')
                     {
-                        Console.WriteLine($"Adding {string.Join(", ", nums)}");
-                        result += nums.Sum();
+                        long sum = nums.Sum(x => (long)x);
+                        Console.WriteLine($"{string.Join(" + ", nums)} = {sum}");
+                        result += sum;
                     }
                     else if (operand == '*')
                     {
-                        Console.WriteLine($"Multiplying {string.Join(", ", nums)}");
-                        result += nums.Aggregate(1, (acc, val) => acc * val);
+                        long product = nums.Aggregate(1L, (acc, val) => acc * val);
+                        Console.WriteLine($"{string.Join(" * ", nums)} = {product}");
+                        result += product;
                     }
 
                     // reset numbers
